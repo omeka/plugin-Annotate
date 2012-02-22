@@ -13,17 +13,13 @@
  * @subpackage Models
  */
 class Annotate extends Omeka_Record {
-  public $text = '';
+  public $text;
   public $user_id;
   public $item_id;
-  public $favorite = 0;
+  public $bookmark = 0;
   public $modified;
   
-  public function __construct(){
-  
-  }
-  
-  protected function _validate(){
+   protected function _validate(){
     if(empty($this->item_id)){
       $this->addError('item_id','Annotation note requires an item id.');
     }
@@ -33,7 +29,7 @@ class Annotate extends Omeka_Record {
     }
   }
   
-  $protected function beforeUpdate(){
+  protected function beforeUpdate(){
     $this->modified = Zend_Date::now()->toString(self::DATE_FORMAT);
   }
 

@@ -26,11 +26,11 @@
 </div>
 
 <div class="field">
-  <label for="annotation_page_title">Bookmarking</label>
+  <label for="annotation_page_bookmarks">Bookmarking</label>
   <div class="inputs">
     <input type="text"
            class="textinput"
-           name="annotation_bookmark"
+           name="annotation_bookmarks"
            value="<?php echo $bookmark; ?>">
     <p class="explanation">
       The default value is bookmark. to change it please specify above.

@@ -24,39 +24,48 @@ class Annotate_IndexController extends Omeka_Controller_Action {
   }
   
   public function saveItemDataAction(){
-    
     if(($user = $this->getCurrentUser())){
-        $userId = $user->id;
-        $itemId = (int)$this->getRequest()->getPost('item_id');
-        
-        //save the Notes.
-        if(!($note = $this->getTable('Annotate')->findByUserIdAndItemId($userId,$itemId))){
-            $note = new Annotate;            
-        }
-        
-        $noteText = $this->getRequest()->getPost('annotation_note_text');
-        $bookmark = $this->getRequest()->getPost('annotation_bookmark');
-        
-        $note->user_id = $userId;
-        $note->item_id = $itemId;
-        $note->bookmark = $bookmark;
+      $userId = $user->id;
+      $itemId = (int)$this->getRequest()->getPost('item_id');
+      
+      if(!$itemId){
+        throw new Exception('Item Id must an integer!');
+      }
+      //Save notes.
+      if(!($note = $this->getTable('Annotate')->findByUserIdAndItemId($userId,$itemId))){
+        $note = new Annotate;
+      }
+      $noteText = $this->getRequest()->getPost('annotation_note_text');
+      $bookmark = $this->getRequest()->getPost('annotation_bookmarks');
+      
+    
+      $note->user_id = $userId;
+      $note->item_id = $itemId;      
+      if(!empty($noteText) && $bookmark != "on"){       
         $note->text = $noteText;
+        $note->bookmark = 0;
         $note->save();
-        
-        if($bookmark != 1 && $noteText == ''){
-            if($note instanceof Annotate){
-                $note->delete();
-            }
+      }elseif($bookmark == "on" && empty($noteText)){
+        $note->text = '';
+        $note->bookmark = 1;
+        $note->save();
+      }elseif($bookmark == "on" && !empty($noteText)){
+        $note->text = $noteText;
+        $note->bookmark = 1;
+        $note->save();
+      }else{
+        if($note instanceof Annotate){
+          $note->delete();
         }
-        
-        
-        //save tags 
-        $tags = $this->getRequest()->getPost('annotation_tags');
-        $item = $this->getTable('Item')->find($itemId);
-        $item->applyTagString($tags,$user->Entity);
-        
-        $this->redirect->gotoRoute(array('controller'=>'Items', 'action'=>'show', 'id'=>$itemId), 'id');
-        
-    }
+      }
+      
+      
+      //SaveTags
+      $tags = $this->getRequest()->getPost('annotation_tags');
+      $item = $this->getTable('Item')->find($itemId);
+      $item->applyTagString($tags,$user->Entity);
+      
+      $this->redirect->gotoRoute(array('controller'=>'items','action'=>'show','id'=>$itemId),'id');
+    }  
   }
 }

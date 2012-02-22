@@ -31,14 +31,10 @@ class AnnotatePlugin extends Omeka_Plugin_Abstract {
     'annotation_bookmarks'  => 'Bookmarks'
   );
    
-  public function __construct(){
-    parent::setUp();
-  }
-  
   public function hookInstall(){
-    $db = get_db();
+   
     //create the query for the table
-    $sql = "CREATE TABLE IF NOT EXISTS `$db->Annotate` (
+    $sql = "CREATE TABLE IF NOT EXISTS `{$this->_db->Annotate}` (
               `id`       BIGINT UNSIGNED NOT NULL auto_increment PRIMARY KEY,
               `text`     TEXT,
               `user_id`  BIGINT UNSIGNED NOT NULL,
@@ -47,31 +43,34 @@ class AnnotatePlugin extends Omeka_Plugin_Abstract {
               `modified` TIMESTAMP NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP  
             ) ENGINE = MYISAM;";
             
-    $db->exec($sql);
-   
+    $this->_db->exec($sql);
+    
+    $this->_installOptions();
   }
   
   public function hookUninstall(){
-    $db = get_db();
-    $sql = "DROP TABLE IF EXISTS `$this->db->Annotate`";
-    $db->exec($sql);
+    //$db = get_db();
+    $sql = "DROP TABLE IF EXISTS `{$this->_db->Annotate}`";
+    $this->_db->exec($sql);
+    
+    $this->_uninstallOptions();
   }
   
   public function hookConfig($post){
     $pagePath = !empty($post['annotation_page_path']) 
                 ? trim($post['annotation_page_path']) 
-                : self::$_options['annotation_page_path'];
+                : $this->_options['annotation_page_path'];
     set_option('annotation_page_path',$pagePath);
     
     $pageTitle = !empty($post['annotation_page_title'])
                  ? trim($post['annotation_page_title'])
-                 : self::$_options['annotation_page_path'];
+                 : $this->_options['annotation_page_title'];
     set_option('annotation_page_title',$pageTitle);
     
-    $bookmark = !empty($post['annotation_bookmark'])
-                ? trim($post['annotation_bookmark'])
-                : self::$_options['annotation_bookmarks'];
-    set_option('annotation_bookmark',$bookmark);
+    $bookmark = !empty($post['annotation_bookmarks'])
+                ? trim($post['annotation_bookmarks'])
+                : $this->_options['annotation_bookmarks'];
+    set_option('annotation_bookmarks',$bookmark);
   }
   
   public function hookConfigForm(){
@@ -83,35 +82,35 @@ class AnnotatePlugin extends Omeka_Plugin_Abstract {
   }
   
   public function hookDefineRoutes($router){
-    $router->addRoute(
-      'annotation_default_route',
-      new Zend_Controller_Router_Route(
-        'annotation/:action',
-        array(
-          'module'     => 'annotate',
-          'controller' => 'index',
-           'action'    => 'index'
-        )
-      )
-    );
+  
+  $router->addRoute(
+            'annotationDefaultRoute',
+            new Zend_Controller_Router_Route(
+                'annotation/:action',
+                array(
+                    'module'        => 'annotate',
+                    'controller'    => 'index',
+                    'action'        => 'index'
+                    )
+            )
+        );
+        
+        if ($bp = get_option('annotation_page_path')) {
+            $router->addRoute(
+                'annotationCustomRoute',
+                new Zend_Controller_Router_Route(
+                "{$bp}/:action/*",
+                    array('module'     => 'annotate',
+                          'controller' => 'index',
+                          'action'     => 'index')));
+        }
     
-    if($bp = get_option('annotation_page_path')){
-      $router->addRoute(
-        'annotation_custom_route',
-        new Zend_Controller_Router_Route(
-          "{$bp}/:action/*",
-          array(
-            'module'  =>  'annotate',
-            'controller' => 'index',
-            'action'     => 'index'
-          )
-        )
-      );
-    }
   }
   
   public function hookPublicAppendToItemsShow(){
     if($user = current_user()){
+      $bp = get_option('annotation_page_path');
+      $bt = get_option('annotation_page_title');
       $annotation = annotate_get_user_note_for_item();
       $tags = tag_string(current_user_tags_for_item());
       $bookmark = get_option('annotation_bookmarks');
@@ -125,9 +124,10 @@ class AnnotatePlugin extends Omeka_Plugin_Abstract {
     
     if($user){
       //Dashboard Title
-      $html = "<h2><a href=\"".html_escape(uri(get_option('annotation_page_path')))."\">"
-                              .get_option('annotation_page_title')." ".get_option('annotation_bookmark')
-                              ."</a></h2><hr>";
+      $bp = get_option('annotation_page_path');
+      $bt = get_option('annotation_page_title');
+      $bb = get_option('annotation_bookmarks');
+      $html = "<h2><a href=\"".html_escape(uri($bp))."\">$bt $bb</a></h2><hr>";
       $note = annotate_get_items_and_notes_by_user_favorite($user,1);
       
       //place the html in the $widgets variable
