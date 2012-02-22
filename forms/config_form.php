@@ -4,7 +4,7 @@
     <input type="text" 
            class="textinput" 
            name="annotation_page_path" 
-           value="<?php echo settings('annotation_page_path'); ?>" >
+           value="<?php echo $pagePath; ?>" >
     <p class="explanation">
       Please enter the relative path from the project root where you wanth the Annotation
       page to be located. Use forward slashes to indicate subdirectories, but do not begin with a forward slash.
@@ -18,7 +18,7 @@
     <input type="text" 
            class="textinput" 
            name="annotation_page_title"
-           value="<?php echo settings('annotaion_page_title'); ?>" />
+           value="<?php echo $pageTitle; ?>" />
     <p class="explanation">
       Please enter the title you'd like to use for your Annotation installation.
     </p>
@@ -31,7 +31,7 @@
     <input type="text"
            class="textinput"
            name="annotation_bookmark"
-           value="<?php echo settings('annotation_bookmark'); ?>">
+           value="<?php echo $bookmark; ?>">
     <p class="explanation">
       The default value is bookmark. to change it please specify above.
     </p>

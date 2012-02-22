@@ -19,6 +19,10 @@ class Annotate extends Omeka_Record {
   public $favorite = 0;
   public $modified;
   
+  public function __construct(){
+  
+  }
+  
   protected function _validate(){
     if(empty($this->item_id)){
       $this->addError('item_id','Annotation note requires an item id.');

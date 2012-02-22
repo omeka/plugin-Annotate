@@ -31,11 +31,6 @@ class AnnotatePlugin extends Omeka_Plugin_Abstract {
     'annotation_bookmarks'  => 'Bookmarks'
   );
    
-  //Standard class constructor
-  //public function setUp(){
-    //parent::setUp();
-  //}
-  
   public function __construct(){
     parent::setUp();
   }
@@ -53,6 +48,7 @@ class AnnotatePlugin extends Omeka_Plugin_Abstract {
             ) ENGINE = MYISAM;";
             
     $db->exec($sql);
+   
   }
   
   public function hookUninstall(){
@@ -62,7 +58,9 @@ class AnnotatePlugin extends Omeka_Plugin_Abstract {
   }
   
   public function hookConfig($post){
-    $pagePath = !empty($post['annotation_page_path']) ? trim($post['annotation_page_path']) : self::$_options['annotation_page_path'];
+    $pagePath = !empty($post['annotation_page_path']) 
+                ? trim($post['annotation_page_path']) 
+                : self::$_options['annotation_page_path'];
     set_option('annotation_page_path',$pagePath);
     
     $pageTitle = !empty($post['annotation_page_title'])
@@ -72,14 +70,14 @@ class AnnotatePlugin extends Omeka_Plugin_Abstract {
     
     $bookmark = !empty($post['annotation_bookmark'])
                 ? trim($post['annotation_bookmark'])
-                : self::$_options['annotation_bookmark'];
+                : self::$_options['annotation_bookmarks'];
     set_option('annotation_bookmark',$bookmark);
   }
   
   public function hookConfigForm(){
     $pagePath = get_option('annotation_page_path');
     $pageTitle = get_option('annotation_page_title');
-    $bookmark = get_option('annotation_bookmark');
+    $bookmark = get_option('annotation_bookmarks');
     
     include 'forms/config_form.php';
   }
@@ -97,7 +95,7 @@ class AnnotatePlugin extends Omeka_Plugin_Abstract {
       )
     );
     
-    if($bp = get_option('annotate_page_path')){
+    if($bp = get_option('annotation_page_path')){
       $router->addRoute(
         'annotation_custom_route',
         new Zend_Controller_Router_Route(
@@ -114,8 +112,9 @@ class AnnotatePlugin extends Omeka_Plugin_Abstract {
   
   public function hookPublicAppendToItemsShow(){
     if($user = current_user()){
-      $userAnnotation = annotate_get_user_note_for_item();
+      $annotation = annotate_get_user_note_for_item();
       $tags = tag_string(current_user_tags_for_item());
+      $bookmark = get_option('annotation_bookmarks');
       
       include 'forms/public_form.php';
     }

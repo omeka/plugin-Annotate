@@ -12,6 +12,7 @@
  */
  
 class Annotate_IndexController extends Omeka_Controller_Action {
+
   public function indexAction(){
     $user = current_user();
     
@@ -25,46 +26,37 @@ class Annotate_IndexController extends Omeka_Controller_Action {
   public function saveItemDataAction(){
     
     if(($user = $this->getCurrentUser())){
-      $userId = $user->id;
-      $itemId = (int)$this->getRequest()->getPost('item_id');
-      
-      if(!$itemId){
-        throw new exception('Item Id must be an integer!');
-      }
-      
-      //Save Notes.
-      $note = $this->getTable('Annotate')->findByUserIdAndItemId($userId,$itemId);
-      $noteText = $this->getRequest()->getPost('annotate_note_text');
-      
-      if(!empty($noteText)){
-        if(!$note){
-          $note = new Annotate;
-          $note->user_id = $userId;
-          $note->item_id = $itemId;
+        $userId = $user->id;
+        $itemId = (int)$this->getRequest()->getPost('item_id');
+        
+        //save the Notes.
+        if(!($note = $this->getTable('Annotate')->findByUserIdAndItemId($userId,$itemId))){
+            $note = new Annotate;            
         }
         
+        $noteText = $this->getRequest()->getPost('annotation_note_text');
+        $bookmark = $this->getRequest()->getPost('annotation_bookmark');
+        
+        $note->user_id = $userId;
+        $note->item_id = $itemId;
+        $note->bookmark = $bookmark;
         $note->text = $noteText;
         $note->save();
-      } else {
-        if($note instanceof Annotate){
-          $note->delete();
+        
+        if($bookmark != 1 && $noteText == ''){
+            if($note instanceof Annotate){
+                $note->delete();
+            }
         }
-      }
-      
-      //save tags
-      $tags = $this->getRequest()->getPost('annotation_tags');
-      $item = $this->getTable('Item')->find($itemId);
-      $item->applyTagString($tags,$user->Entity);
-      
-      $this->redirect
-            ->gotoRoute(
-              array(
-                'controller' => 'items',
-                'action' => 'show',
-                'id' => $itemId
-              ),
-              'id'
-            );
+        
+        
+        //save tags 
+        $tags = $this->getRequest()->getPost('annotation_tags');
+        $item = $this->getTable('Item')->find($itemId);
+        $item->applyTagString($tags,$user->Entity);
+        
+        $this->redirect->gotoRoute(array('controller'=>'Items', 'action'=>'show', 'id'=>$itemId), 'id');
+        
     }
   }
 }

@@ -1,6 +1,6 @@
 <?php 
   $pageTitle = 'Annotation : Dashboard';
-  head(array('title' => $pageTitle);
+  head(array('title' => $pageTitle));
 ?>
 
 <div id="primary">
@@ -15,7 +15,7 @@
         echo "<ul><li>".$n->text."</li></ul>";
       }
     }else {
-      echo "<p>Annotated Items will appear here.</p>";
+      echo "<p>No Items have been annotated.</p>";
     }
   ?>
 </div>
