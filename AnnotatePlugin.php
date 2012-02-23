@@ -18,11 +18,13 @@ class AnnotatePlugin extends Omeka_Plugin_Abstract {
     'config',
     'config_form',
     'define_routes',
-    'public_append_to_items_show'
+    'public_append_to_items_show',
+    'public_theme_header'
   );
   //Needed filters for this plugin
   protected $_filters = array(
-    'guest_user_widgets'
+    'guest_user_widgets',
+    'public_navigation_main'
   );
   //define default options here.
   protected $_options = array(
@@ -49,7 +51,7 @@ class AnnotatePlugin extends Omeka_Plugin_Abstract {
   }
   
   public function hookUninstall(){
-    //$db = get_db();
+  
     $sql = "DROP TABLE IF EXISTS `{$this->_db->Annotate}`";
     $this->_db->exec($sql);
     
@@ -134,11 +136,33 @@ class AnnotatePlugin extends Omeka_Plugin_Abstract {
       foreach($note as $n){
         $item = get_item_by_id($n->item_id);
         set_current_item($item);
-        $html .= "<h2>".link_to_item()."</h2>";
-        $html .= "<ul><li>".$n->text."</li></ul>";
+        $html .= "<h3>".link_to_item()."</h3>";
+        if($n->text != ''){
+          $html .= "<li>".$n->text."</li>";
+        }
       }
     }
-    $widgets[] = $html;
+    $widgets['notes'] = $html;
     return $widgets;
   }
+  
+  public function filterPublicNavigationMain($nav){
+   
+    if(!plugin_is_active('GuestUser')){
+      if($user= current_user()){
+       $path = get_option('annotation_page_path');
+       $nav['Notes'] = uri($path);
+       $nav['logout'] = uri('users/logout');
+    
+      }else{
+        $nav['login'] = uri('users/login');
+      }
+    }
+    return $nav;
+  }
+  
+  public function hookPublicThemeHeader($request){
+    //queue_css('noteIndexa');
+  }
+  
 }
