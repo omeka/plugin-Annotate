@@ -12,15 +12,18 @@
  */
  
 class Annotate_IndexController extends Omeka_Controller_Action {
-
+  
+  protected $nottedItemsPerPage = 10;
+  
   public function indexAction(){
     $user = current_user();
     
     if($user){
       $note = annotate_getItems_and_notes_by_user($user);
     }
-    
+    $count = totalNotedItems();
     $this->view->note = $note;
+    $this->view->count = $count;
   }
   
   public function saveItemDataAction(){

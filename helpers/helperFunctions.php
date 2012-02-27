@@ -35,3 +35,7 @@ function annotate_get_items_and_notes_by_user_favorite($user = null, $favorite =
   
   return $favorite;
 }
+
+function totalNotedItems(){
+    return get_db()->getTable('Annotate')->count();
+}

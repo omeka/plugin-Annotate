@@ -32,5 +32,7 @@ class Annotate extends Omeka_Record {
   protected function beforeUpdate(){
     $this->modified = Zend_Date::now()->toString(self::DATE_FORMAT);
   }
+  
+
 
 }

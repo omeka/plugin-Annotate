@@ -35,4 +35,6 @@ class AnnotateTable extends Omeka_Db_Table {
                  ->where('bookmark = ?',$bookmarked)
            );
   }
+  
+
 }
