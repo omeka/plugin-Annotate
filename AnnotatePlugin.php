@@ -162,7 +162,7 @@ class AnnotatePlugin extends Omeka_Plugin_Abstract {
   }
   
   public function hookPublicThemeHeader($request){
-    //queue_css('noteIndexa');
+    queue_css('note');
   }
   
 }

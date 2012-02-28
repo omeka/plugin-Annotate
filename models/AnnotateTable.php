@@ -21,11 +21,11 @@ class AnnotateTable extends Omeka_Db_Table {
                   );
   }
   
-  public function getUserNotes($userId){
-    return $this->fetchObjects(
-      $this->getSelect()
-           ->where('user_id = ?',$userId)
-          );
+  public function getUserNotes($userId){  
+   
+       $sql = $this->getSelect()->where('user_id = ?',$userId);   
+    
+    return $this->fetchObjects($sql);
   }
   
   public function getUserBookmarked($userId, $bookmarked){
