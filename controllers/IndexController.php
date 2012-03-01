@@ -13,36 +13,22 @@
  
 class Annotate_IndexController extends Omeka_Controller_Action {
   
-  protected $nottedItemsPerPage = 10;
-  
-  //public function indexAction(){}
+  protected $_notesPerPage = 10;
   
   public function indexAction(){
   $result = $this->_helper->searchItems();
     $user = current_user();
     
+       $filter = array(
+        'bookmark' => $_GET['bookmark'], 
+        'note' => $_GET['note']
+     );
       if($user){
-        $note = annotate_getItems_and_notes_by_user($user);
-      }
+          $note = annotate_getItems_and_notes_by_user($user,$filter);
+      }    
+     
+     $this->view->note = $note;
       
-      $paginationUrl = $this->getRequest()->getBaseUrl()."/".get_option('annotation_page_path')."/index";
-      
-      $pagination = array(
-         'menu'          =>   null,
-         'page'          => $result['page'],
-         'per_page'      => $result['per_page'],
-         'total_results' => $result['total_results'],
-         'link'          => $paginationUrl
-         
-      );
-      
-      Zend_Registry::set('pagination',$pagination);
-      fire_plugin_hook('browse_annotations',$result['annotations']);
-    
-    $count = totalNotedItems();
-    $this->view->note = $note;
-    $this->view->count = $count;
-    $this->view->assign(array('items'=>$result['annotation'],'total_annotations'=>$result['total_annotations']));
   }
   
   public function saveItemDataAction(){
