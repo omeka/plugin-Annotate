@@ -92,7 +92,7 @@ class AnnotatePlugin extends Omeka_Plugin_Abstract {
                 array(
                     'module'        => 'annotate',
                     'controller'    => 'index',
-                    'action'        => 'index'
+                    'action'        => 'browse'
                     )
             )
         );
@@ -104,7 +104,7 @@ class AnnotatePlugin extends Omeka_Plugin_Abstract {
                 "{$bp}/:action/*",
                     array('module'     => 'annotate',
                           'controller' => 'index',
-                          'action'     => 'index')));
+                          'action'     => 'browse')));
         }
     
   }

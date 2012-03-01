@@ -5,20 +5,24 @@
  <h1><?php echo $pageTitle; ?> <?php echo __('(%s total)',count($note));?></h1>
 <div id="primary">
       <?php echo flash(); ?>
-    <?php if (count($note)): ?>
+    <?php if (!count($note)): ?>
+     <?php echo "<p>No Items have been annotated.</p>"; ?>
+    <?php else: ?>
      <ul id="note_sort" class="navigation">
+     
       <li><strong><?php echo __('Quick Filter'); ?></strong></li>
      <?php
       echo nav(array(
         __('All')=>uri(get_option('annotation_page_path')),
-        __('Note')=>uri(get_option('annotation_page_path')."/index?note=1"),
-        __('Bookmarked')=> uri(get_option('annotation_page_path')."/index?bookmark=1")
+        __('Note')=>uri(get_option('annotation_page_path')."/browse?note=1"),
+        __('Bookmarked')=> uri(get_option('annotation_page_path')."/browse?bookmark=1")
       ));
      ?>  
-     </ul>       
+     </ul>  
+          
   <div class="noted_items">
   <div class="pagination"><?php echo pagination_links(); ?></div>
-  <table id="noted_list">
+  <table id="annotations">
   <col id="col-title" />
   <col id="col-note" />
   <col id="bookmarked" />
@@ -36,7 +40,6 @@
   </thead>
   <tbody>
   <?php
-    if($note){
       foreach($note as $n){
         $item = get_item_by_id($n->item_id);
         set_current_item($item);
@@ -46,14 +49,13 @@
         echo "<td>".$bookmarked."</td>";
         echo "<td>".$n->modified."</td></tr>";
       }
-    }else {
-      echo "<p>No Items have been annotated.</p>";
-    }
+   
+     
   ?>
   </tbody>
   </table>
   <div class="pagination"><?php echo pagination_links(); ?></div>
+  <?php endif; ?>
   </div>
 </div>
-
-<?php endif; foot(); ?>
+<?php foot(); ?>

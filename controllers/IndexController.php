@@ -13,9 +13,21 @@
  
 class Annotate_IndexController extends Omeka_Controller_Action {
   
-  protected $_notesPerPage = 10;
+  protected $_session;
   
-  public function indexAction(){
+  public function init(){
+    if(version_compare(OMEKA_VERSION, '2.0-dev', '>=')){
+        $this->_helper->db->setDefaultModelName('Annotate');
+    } else {
+        $this->_modelClass = 'Annotate';
+    }
+    $this->_browseRecordsPerPage = 10;
+    
+    require_once 'Zend/Session.php';
+    $this->session = new Zend_Session_Namespace('Annotate');
+  }
+  
+ public function browseAction(){
   $result = $this->_helper->searchItems();
     $user = current_user();
     
@@ -28,7 +40,8 @@ class Annotate_IndexController extends Omeka_Controller_Action {
       }    
      
      $this->view->note = $note;
-      
+     
+      parent::browseAction();
   }
   
   public function saveItemDataAction(){
