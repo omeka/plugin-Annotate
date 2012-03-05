@@ -34,5 +34,4 @@ class AnnotateTable extends Omeka_Db_Table {
     
     return $this->fetchObjects($query);
   }
-  
 }

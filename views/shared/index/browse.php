@@ -1,25 +1,16 @@
 <?php 
   $pageTitle = 'Annotation : Dashboard';
   head(array('title' => $pageTitle));
+  
+  //print_r($annotates);
 ?>
- <h1><?php echo $pageTitle; ?> <?php echo __('(%s total)',count($note));?></h1>
+ <h1><?php echo $pageTitle; ?> <?php echo __('(%s total)',count($annotates));?></h1>
 <div id="primary">
       <?php echo flash(); ?>
-    <?php if (!count($note)): ?>
+    <?php if (!count($annotates)): ?>
      <?php echo "<p>No Items have been annotated.</p>"; ?>
     <?php else: ?>
-     <ul id="note_sort" class="navigation">
-     
-      <li><strong><?php echo __('Quick Filter'); ?></strong></li>
-     <?php
-      echo nav(array(
-        __('All')=>uri(get_option('annotation_page_path')),
-        __('Note')=>uri(get_option('annotation_page_path')."/browse?note=1"),
-        __('Bookmarked')=> uri(get_option('annotation_page_path')."/browse?bookmark=1")
-      ));
-     ?>  
-     </ul>  
-          
+           
   <div class="noted_items">
   <div class="pagination"><?php echo pagination_links(); ?></div>
   <table id="annotations">
@@ -40,7 +31,7 @@
   </thead>
   <tbody>
   <?php
-      foreach($note as $n){
+      foreach($annotates as $n){
         $item = get_item_by_id($n->item_id);
         set_current_item($item);
         $bookmarked = ($n->bookmark == 1) ? "<img src=".img('tick.png')." alt=".__('bookmark').">": '';

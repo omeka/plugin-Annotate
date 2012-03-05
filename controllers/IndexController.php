@@ -28,18 +28,6 @@ class Annotate_IndexController extends Omeka_Controller_Action {
   }
   
  public function browseAction(){
-  $result = $this->_helper->searchItems();
-    $user = current_user();
-    
-       $filter = array(
-        'bookmark' => $_GET['bookmark'], 
-        'note' => $_GET['note']
-     );
-      if($user){
-          $note = annotate_getItems_and_notes_by_user($user,$filter);
-      }    
-     
-     $this->view->note = $note;
      
       parent::browseAction();
   }
